@@ -1,7 +1,8 @@
 var app = {
 
   initialize: function() {
-    console.log("Hello from JS")
+    this.store = new LocalStorageStore()
+    this.game = new MultipleChoiceGame()
   }
 
 }

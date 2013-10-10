@@ -1,46 +1,43 @@
-var LocalStorageStore = function(successCallback, errorCallback) {
+var LocalStorageStore = function() {
 
-    this.findByName = function(searchKey, callback) {
-        var questions = JSON.parse(window.localStorage.getItem("questions"));
-        var results = questions.filter(function(element) {
-            var fullName = element.firstName + " " + element.lastName;
-            return fullName.toLowerCase().indexOf(searchKey.toLowerCase()) > -1;
-        });
-        callLater(callback, results);
+  // retrieve questions from local storage
+  var questions = JSON.parse(window.localStorage.getItem("savedQuestions"))
+  // determine number of questions retrieved
+  var numberOfQuestions = questions.length
+
+
+  this.getRandomQuestion = function(){
+    // get random integer less number of questions
+    var randomInt = Math.floor(Math.random() * (numberOfQuestions) )
+    // return the corresponding question object
+    return questions[randomInt]
+  }
+
+  this.getNextQuestion = function(previousQuestionID){
+    // if on last question, return first question...
+    if (previousQuestionID === numberOfQuestions) {
+      return questions[0]
     }
+    // ...else return next question from the array
+    else { return questions[previousQuestionID] }
+  }
 
-    this.findById = function(id, callback) {
-        var questions = JSON.parse(window.localStorage.getItem("questions"));
-        var employee = null;
-        var l = questions.length;
-        for (var i=0; i < l; i++) {
-            if (questions[i].id === id) {
-                employee = questions[i];
-                break;
-            }
-        }
-        callLater(callback, employee);
-    }
+  var questionsToSave = [
+    {"id": 1, "question": "Capital of MA", "answer": "Boston"},
+    {"id": 2, "question": "Capital of NY", "answer": "Albany"},
+    {"id": 3, "question": "Capital of CT", "answer": "Hartford"},
+    {"id": 4, "question": "Capital of IL", "answer": "Springfield"},
+  ]
 
-    // Used to simulate async calls. This is done to provide a consistent interface with stores (like WebSqlStore)
-    // that use async data access APIs
-    var callLater = function(callback, data) {
-        if (callback) {
-            setTimeout(function() {
-                callback(data);
-            });
-        }
-    }
+  // save the questions to HTML5 local storage to enable offline access
+  window.localStorage.setItem("savedQuestions", JSON.stringify(questionsToSave))
 
-    var questions = [
-            {"id": 1, "question": "Capital of Mass.", "answer": "Boston"},
-            {"id": 2, "question": "Capital of NY", "answer": "Albany"},
-            {"id": 3, "question": "Capital of CT", "answer": "Hartford"},
-            {"id": 4, "question": "Capital of Illinois", "answer": "Springfield"},
-        ];
-
-    window.localStorage.setItem("questions", JSON.stringify(questions));
-
-    callLater(successCallback);
+  // Driver code for testing
+  var firstQuestion = this.getRandomQuestion()
+  console.log(firstQuestion.question)
+  console.log(firstQuestion.answer)
+  console.log('----------')
+  nextQuestion = this.getNextQuestion(firstQuestion.id)
+  console.log(nextQuestion.question)
 
 }
